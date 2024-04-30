@@ -25,7 +25,7 @@ class SecurityConfig(
                         .anyRequest().authenticated()
             }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authenticationProvider(authenticationProvider)
+            // TODO: AuthenticationManager가 AuthenticationProvider에게 인증 위임 로직 처리
             // TODO : addFilterBefore 처리 -> jwtAuthenticationFilter, 토큰 만드는 jwtService 구현 필요
             .logout {
                 it

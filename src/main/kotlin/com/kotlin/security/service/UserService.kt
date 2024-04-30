@@ -1,8 +1,12 @@
 package com.kotlin.security.service
 
 import com.kotlin.security.entity.UserEntity
+import com.kotlin.security.model.authentication.AuthenticationRequest
+import com.kotlin.security.model.authentication.AuthenticationResponse
 import com.kotlin.security.model.authentication.RegisterRequest
 import com.kotlin.security.repository.UserRepository
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service
 class UserService(
         private val userRepository: UserRepository,
         private val passwordEncoder: PasswordEncoder,
+        private val authenticationManager: AuthenticationManager
 ) {
     fun register(registerRequest: RegisterRequest): Unit {
 
@@ -24,5 +29,17 @@ class UserService(
         )
 
         userRepository.save(user)
+    }
+
+    fun authenticate(authenticationRequest: AuthenticationRequest): AuthenticationResponse {
+
+        authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                        authenticationRequest.username,
+                        authenticationRequest.password
+                )
+        )
+        // TODO : jwt 발급 로직 구현
+        return AuthenticationResponse("")
     }
 }

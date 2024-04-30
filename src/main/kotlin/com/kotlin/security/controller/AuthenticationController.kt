@@ -1,5 +1,6 @@
 package com.kotlin.security.controller
 
+import com.kotlin.security.model.authentication.AuthenticationRequest
 import com.kotlin.security.model.authentication.RegisterRequest
 import com.kotlin.security.service.UserService
 import org.springframework.http.HttpStatus
@@ -18,4 +19,9 @@ class AuthenticationController(
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
     fun register(@RequestBody registerRequest: RegisterRequest) = userService.register(registerRequest)
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/authenticate")
+    fun authenticate(@RequestBody authenticationRequest: AuthenticationRequest) =
+            userService.authenticate(authenticationRequest)
 }
