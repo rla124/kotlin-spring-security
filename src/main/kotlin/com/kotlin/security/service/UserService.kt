@@ -5,6 +5,7 @@ import com.kotlin.security.model.authentication.AuthenticationRequest
 import com.kotlin.security.model.authentication.AuthenticationResponse
 import com.kotlin.security.model.authentication.RegisterRequest
 import com.kotlin.security.repository.UserRepository
+import com.kotlin.security.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Service
 class UserService(
         private val userRepository: UserRepository,
         private val passwordEncoder: PasswordEncoder,
-        private val authenticationManager: AuthenticationManager
+        private val authenticationManager: AuthenticationManager,
+        private val jwtService: JwtService
 ) {
     fun register(registerRequest: RegisterRequest): Unit {
 
@@ -39,7 +41,9 @@ class UserService(
                         authenticationRequest.password
                 )
         )
-        // TODO : jwt 발급 로직 구현
-        return AuthenticationResponse("")
+
+        val user = userRepository.findByUsername(authenticationRequest.username)
+
+        return AuthenticationResponse(jwtService.generateToken(user!!))
     }
 }
