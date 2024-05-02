@@ -37,6 +37,11 @@ class JwtService {
         return claimsResolver(claims)
     }
 
+    fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
+        val username = extractUsername(token)
+        return username == userDetails.username && !isTokenExpired(token)
+    }
+
     private fun getSignInKey(): Key {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
@@ -48,4 +53,8 @@ class JwtService {
             .build()
             .parseClaimsJws(token) //json web signature
             .body
+
+    private fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
+
+    private fun extractExpiration(token: String): Date = extractClaim(token, Claims::getExpiration)
 }
