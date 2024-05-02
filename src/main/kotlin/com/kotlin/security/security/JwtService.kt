@@ -1,5 +1,6 @@
 package com.kotlin.security.security
 
+import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.SignatureAlgorithm
@@ -28,8 +29,23 @@ class JwtService {
             .compact()
 
     fun generateToken(userDetails: UserDetails): String = generateToken(HashMap(), userDetails)
+
+    fun extractUsername(token: String): String = extractClaim(token, Claims::getSubject)
+
+    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
+        val claims = extractAllClaims(token)
+        return claimsResolver(claims)
+    }
+
     private fun getSignInKey(): Key {
         val keyBytes = Decoders.BASE64.decode(secretKey)
         return Keys.hmacShaKeyFor(keyBytes)
     }
+
+    private fun extractAllClaims(token: String): Claims = Jwts
+            .parserBuilder()
+            .setSigningKey(getSignInKey())
+            .build()
+            .parseClaimsJws(token) //json web signature
+            .body
 }
