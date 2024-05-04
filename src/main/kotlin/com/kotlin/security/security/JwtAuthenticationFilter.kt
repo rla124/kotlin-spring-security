@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
@@ -37,7 +38,11 @@ class JwtAuthenticationFilter(
             val userDetails = userDetailsService.loadUserByUsername(username)
 
             if (jwtService.isTokenValid(jwtToken, userDetails)) {
-
+                val authenticationToken = UsernamePasswordAuthenticationToken(
+                        userDetails, // principal
+                        null, // credentials
+                        userDetails.authorities // authorities
+                )
             }
         }
     }
