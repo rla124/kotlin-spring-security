@@ -1,6 +1,7 @@
 package com.kotlin.security.service
 
 import com.kotlin.security.entity.UserEntity
+import com.kotlin.security.exception.RestExceptionHandler
 import com.kotlin.security.model.authentication.AuthenticationRequest
 import com.kotlin.security.model.authentication.AuthenticationResponse
 import com.kotlin.security.model.authentication.RegisterRequest
@@ -21,7 +22,7 @@ class UserService(
     fun register(registerRequest: RegisterRequest): Unit {
 
         if (userRepository.findByUsernameOrEmail(registerRequest.username, registerRequest.email) != null) {
-            // TODO : 전역 예외 처리 - 이미 등록된 유저 CONFICT
+            throw RestExceptionHandler.RegisteredException()
         }
 
         val user = UserEntity(
