@@ -45,6 +45,9 @@ class UserService(
 
         val user = userRepository.findByUsername(authenticationRequest.username)
 
-        return AuthenticationResponse(jwtService.generateToken(user!!))
+        val accessToken = jwtService.generateAccessToken(user!!)
+        val refreshToken = jwtService.generateRefreshToken(user!!)
+
+        return AuthenticationResponse(accessToken, refreshToken)
     }
 }

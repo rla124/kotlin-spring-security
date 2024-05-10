@@ -17,18 +17,31 @@ class JwtService {
     @Value("\${custom.jwt.secret}")
     lateinit var secretKey: String
 
-    @Value("\${custom.jwt.expiration}")
-    lateinit var expirationTime: Number
+    @Value("\${custom.jwt.token.access-expiration-time}")
+    lateinit var accessExpirationTime: Number
 
-    fun generateToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String = Jwts.builder()
+    @Value("\${custom.jwt.token.refresh-expiration-time}")
+    lateinit var refreshExpirationTime: Number
+
+    fun generateAccessToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String = Jwts.builder()
             .setClaims(extraClaims)
             .setSubject(userDetails.username)
             .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + expirationTime.toLong()))
+            .setExpiration(Date(System.currentTimeMillis() + accessExpirationTime.toLong()))
             .signWith(getSignInKey(),SignatureAlgorithm.HS256)
             .compact()
 
-    fun generateToken(userDetails: UserDetails): String = generateToken(HashMap(), userDetails)
+    fun generateAccessToken(userDetails: UserDetails): String = generateAccessToken(HashMap(), userDetails)
+
+    fun generateRefreshToken(extraClaims: Map<String, Any>, userDetails: UserDetails): String = Jwts.builder()
+            .setClaims(extraClaims)
+            .setSubject(userDetails.username)
+            .setIssuedAt(Date(System.currentTimeMillis()))
+            .setExpiration(Date(System.currentTimeMillis() + refreshExpirationTime.toLong()))
+            .signWith(getSignInKey(),SignatureAlgorithm.HS256)
+            .compact()
+
+    fun generateRefreshToken(userDetails: UserDetails): String = generateRefreshToken(HashMap(), userDetails)
 
     fun extractUsername(token: String): String = extractClaim(token, Claims::getSubject)
 
