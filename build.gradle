@@ -39,6 +39,10 @@ dependencies {
 	/*DATABASE*/
 	implementation("mysql:mysql-connector-java:8.0.33")
 
+	/*REDIS*/
+	implementation("org.springframework.data:spring-data-redis:3.1.2")
+	implementation("io.lettuce:lettuce-core:6.2.5.RELEASE")
+
 	/*TEST*/
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
