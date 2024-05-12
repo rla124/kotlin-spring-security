@@ -38,6 +38,7 @@ dependencies {
 
 	/*DATABASE*/
 	implementation("mysql:mysql-connector-java:8.0.33")
+	runtimeOnly("org.postgresql:postgresql:42.7.3")
 
 	/*REDIS*/
 	implementation("org.springframework.data:spring-data-redis:3.1.2")
