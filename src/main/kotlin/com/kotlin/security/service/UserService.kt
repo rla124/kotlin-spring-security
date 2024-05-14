@@ -5,6 +5,7 @@ import com.kotlin.security.exception.RestExceptionHandler
 import com.kotlin.security.model.authentication.AuthenticationRequest
 import com.kotlin.security.model.authentication.AuthenticationResponse
 import com.kotlin.security.model.authentication.RegisterRequest
+import com.kotlin.security.model.authentication.ReissueDto
 import com.kotlin.security.redis.RedisUtil
 import com.kotlin.security.repository.UserRepository
 import com.kotlin.security.security.JwtService
@@ -58,5 +59,23 @@ class UserService(
         return AuthenticationResponse(accessToken, refreshToken)
     }
 
-    // TODO: refresh token 이용한 토큰 재발급 함수 추가
+    fun reissueToken(reissueRequest: ReissueDto): ReissueDto {
+
+        val username = jwtService.extractUsername(reissueRequest.accessToken)
+        val userDetails = userRepository.findByUsername(username)
+
+        jwtService.isTokenValid(reissueRequest.refreshToken, userDetails!!)
+
+        val redisRefreshToken = redisUtil.getData(username)
+        if (redisRefreshToken != reissueRequest.refreshToken) {
+            // TODO: 사용자의 refresh token과 일치하지 않다는 예외 처리
+        }
+
+        val recreateAccessToken = jwtService.regenerateAccessToken(reissueRequest.accessToken)
+        val recreateRefreshToken = jwtService.regenerateRefreshToken(reissueRequest.accessToken)
+
+        redisUtil.setData(userDetails.username, recreateRefreshToken, refreshExpirationTime.toLong()) // 새로운 refresh token으로 갱신
+
+        return ReissueDto(recreateAccessToken, recreateRefreshToken)
+    }
 }
