@@ -1,5 +1,6 @@
 package com.kotlin.security.security
 
+import com.kotlin.security.repository.UserRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
@@ -12,7 +13,9 @@ import java.security.Key
 import java.util.*
 
 @Service
-class JwtService {
+class JwtService(
+        private val userRepository: UserRepository
+) {
 
     @Value("\${custom.jwt.secret}")
     lateinit var secretKey: String
@@ -70,4 +73,14 @@ class JwtService {
     private fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
 
     private fun extractExpiration(token: String): Date = extractClaim(token, Claims::getExpiration)
+
+    fun regenerateAccessToken(accessToken: String): String {
+        val username = extractUsername(accessToken)
+        return generateAccessToken(userRepository.findByUsername(username)!!)
+    }
+
+    fun regenerateRefreshToken(accessToken: String): String {
+        val username = extractUsername(accessToken)
+        return generateRefreshToken(userRepository.findByUsername(username)!!)
+    }
 }
