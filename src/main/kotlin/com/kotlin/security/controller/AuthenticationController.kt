@@ -2,6 +2,7 @@ package com.kotlin.security.controller
 
 import com.kotlin.security.model.authentication.AuthenticationRequest
 import com.kotlin.security.model.authentication.RegisterRequest
+import com.kotlin.security.model.authentication.ReissueDto
 import com.kotlin.security.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PostMapping
@@ -24,4 +25,9 @@ class AuthenticationController(
     @PostMapping("/authenticate")
     fun authenticate(@RequestBody authenticationRequest: AuthenticationRequest) =
             userService.authenticate(authenticationRequest)
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/reissue")
+    fun reissue(@RequestBody reissueRequest: ReissueDto) =
+            userService.reissueToken(reissueRequest)
 }
