@@ -1,5 +1,6 @@
-package com.kotlin.security.security
+package com.kotlin.security.config
 
+import com.kotlin.security.security.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
@@ -14,8 +15,8 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-      private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-      private val authenticationProvider: AuthenticationProvider
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+        private val authenticationProvider: AuthenticationProvider
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain? = http
