@@ -47,7 +47,7 @@ class HttpCookieOAuth2AuthorizationRequestRepository : AuthorizationRequestRepos
     }
 
     // oauth2 인가 요청과 리다이렉트 uri를 저장하는 쿠키 삭제
-    private fun removeAuthorizationRequestCookies(request: HttpServletRequest, response: HttpServletResponse) {
+    fun removeAuthorizationRequestCookies(request: HttpServletRequest, response: HttpServletResponse) {
         CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
         CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME)
     }
