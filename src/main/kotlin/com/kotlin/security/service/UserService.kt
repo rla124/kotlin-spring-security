@@ -68,7 +68,7 @@ class UserService(
 
         val redisRefreshToken = redisUtil.getData(username)
         if (redisRefreshToken != reissueRequest.refreshToken) {
-            // TODO: 사용자의 refresh token과 일치하지 않다는 예외 처리
+            throw RestExceptionHandler.RefreshTokenMismatchException()
         }
 
         val recreateAccessToken = jwtService.regenerateAccessToken(reissueRequest.accessToken)

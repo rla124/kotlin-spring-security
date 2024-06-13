@@ -34,6 +34,14 @@ class RestExceptionHandler {
         return ResponseError.BAD_REQUEST
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleRefreshTokenMismatchException(e: RefreshTokenMismatchException): ResponseError {
+        log.error(e.message, e)
+        return ResponseError.REFRESH_TOKEN_MISMATCH
+    }
+
     class RegisteredException: Exception()
+    class RefreshTokenMismatchException: RuntimeException()
     class BadRequestException(message: String) : RuntimeException(message)
 }
