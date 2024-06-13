@@ -27,5 +27,13 @@ class RestExceptionHandler {
         return ResponseError.BAD_CREDENTIALS
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleBadRequestException(e: BadRequestException): ResponseError {
+        log.error(e.message, e)
+        return ResponseError.BAD_REQUEST
+    }
+
     class RegisteredException: Exception()
+    class BadRequestException(message: String) : RuntimeException(message)
 }

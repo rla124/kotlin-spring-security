@@ -7,5 +7,6 @@ enum class ResponseError(val statusCode: Int, val message: String) {
 
     ALREADY_REGISTERED(409, "Already registered."),
 
-    BAD_CREDENTIALS(401, "Bad credentials")
+    BAD_CREDENTIALS(401, "Bad credentials"),
+    BAD_REQUEST(400, "Bad request")
 }
