@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import javax.crypto.AEADBadTagException
 
 @Component
 class JwtAuthenticationFilter(
@@ -31,21 +32,35 @@ class JwtAuthenticationFilter(
 
         val lengthOfBearerWithSpace = 7
         val jwtToken = authHeader.substring(lengthOfBearerWithSpace)
-
-        val username = jwtService.extractUsername(jwtToken)
+        log.info("jwe value: $jwtToken")
 
         if (SecurityContextHolder.getContext().authentication == null) {
 
-            val userDetails = userDetailsService.loadUserByUsername(username)
+            try {
+                val username = jwtService.extractUsernameFromJWE(jwtToken, jwtService.generateAESKey())
+                log.info("Extracted Username from jwe: $username")
 
-            if (jwtService.isTokenValid(jwtToken, userDetails)) {
-                val authenticationToken = UsernamePasswordAuthenticationToken(
-                        userDetails, // principal
-                        null, // credentials
-                        userDetails.authorities // authorities
-                )
-                authenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-                SecurityContextHolder.getContext().authentication = authenticationToken
+                if (SecurityContextHolder.getContext().authentication == null) {
+                    val userDetails = userDetailsService.loadUserByUsername(username)
+                    log.info("UserDetails by loadUserByUsername method: $userDetails")
+
+                    if (jwtService.isAdvancedTokenValid(jwtToken, userDetails)) {
+                        val authenticationToken = UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.authorities
+                        )
+                        authenticationToken.details = WebAuthenticationDetailsSource().buildDetails(request)
+                        SecurityContextHolder.getContext().authentication = authenticationToken
+                    } else {
+                        log.warn("Invalid jwe: $jwtToken")
+                    }
+                }
+            } catch (e: Exception) {
+                log.error("Error extracting username from JWE: ", e)
+            } catch (e: AEADBadTagException) {
+                log.error("Decryption failed due to tag mismatch", e)
+                throw e
             }
         }
         filterChain.doFilter(request, response)

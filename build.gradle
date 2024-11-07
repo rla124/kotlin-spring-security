@@ -39,6 +39,12 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
+	// https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
+	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
+	// https://mvnrepository.com/artifact/com.google.crypto.tink/tink
+	// For ED25519 key pairs
+	implementation("com.google.crypto.tink:tink:1.9.0")
+
 	/*DATABASE*/
 	implementation("mysql:mysql-connector-java:8.0.33")
 	runtimeOnly("org.postgresql:postgresql:42.7.3")

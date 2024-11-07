@@ -51,8 +51,8 @@ class UserService(
 
         val user = userRepository.findByUsername(authenticationRequest.username)
 
-        val accessToken = jwtService.generateAccessToken(user!!)
-        val refreshToken = jwtService.generateRefreshToken(user!!)
+        val accessToken = jwtService.generateAdvancedAccessToken(user!!)
+        val refreshToken = jwtService.generateAdvancedRefreshToken(user!!)
 
         redisUtil.setData(user.username, refreshToken, refreshExpirationTime.toLong())
 
@@ -61,18 +61,19 @@ class UserService(
 
     fun reissueToken(reissueRequest: ReissueDto): ReissueDto {
 
-        val username = jwtService.extractUsername(reissueRequest.accessToken)
+        val username = jwtService.extractUsernameFromJWE(reissueRequest.accessToken, jwtService.generateAESKey())
         val userDetails = userRepository.findByUsername(username)
 
-        jwtService.isTokenValid(reissueRequest.refreshToken, userDetails!!)
+        jwtService.isAdvancedTokenValid(reissueRequest.refreshToken, userDetails!!)
 
         val redisRefreshToken = redisUtil.getData(username)
         if (redisRefreshToken != reissueRequest.refreshToken) {
             throw RestExceptionHandler.RefreshTokenMismatchException()
         }
 
-        val recreateAccessToken = jwtService.regenerateAccessToken(reissueRequest.accessToken)
-        val recreateRefreshToken = jwtService.regenerateRefreshToken(reissueRequest.accessToken)
+        // 이미 위 로직에서 user validation 검증을 했으므로 encryptedToken을 인자로 받아 username을 재추출할 필요가 없음
+        val recreateAccessToken = jwtService.generateAdvancedAccessToken(userDetails)
+        val recreateRefreshToken = jwtService.generateAdvancedRefreshToken(userDetails)
 
         redisUtil.setData(userDetails.username, recreateRefreshToken, refreshExpirationTime.toLong()) // 새로운 refresh token으로 갱신
 
